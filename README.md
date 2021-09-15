@@ -15,6 +15,7 @@ It was prepared as an example. It is already available and open for development.
 
 ```php
 <?php
+    require_once 'config.php';
     require_once 'templateRenderer.php';
     $renderer = new TemplateRenderer();
 
@@ -30,4 +31,4 @@ It was prepared as an example. It is already available and open for development.
 
 ### Note:
 
-You need to make changes in templateEngine.php and other required files according to your own folder structure.
+You need to make changes in config.php and other necessary files according to your own folder structure.
