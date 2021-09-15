@@ -12,13 +12,13 @@
         public function render_template(string $view, array $data = []){
             extract($data);
 
-            $this->viewPath = __DIR__ . '/views/' . $view . '.template.php';
-            $this->cachePath = __DIR__ . '/cache/' . md5($view) . '.cache.php';
+            $this->viewPath = VIEW_BASE . $view . '.template.php';
+            $this->cachePath = CACHE_BASE . md5($view) . '.cache.php';
 
             if(file_exists($this->viewPath)){
                 $this->view = file_get_contents($this->viewPath);
             }else{
-                echo 'Dosya Bulunamadı...! <b>' . $this->viewPath . '</b>';
+                echo 'Dosya Bulunamadı..! <b> templateEngine.php//line:21</b> ' . $this->viewPath;
                 exit();
             }
 
@@ -51,23 +51,29 @@
 
         /**
          * Performs parse for the following directive
-         * @include 'sample.template.php'
+         * @include 'sample.blade.php'
          */
         private function parseInclude(){
             $pattern = '/@include\s?[\'\"](.*)[\'\"]/';
 
             while(preg_match($pattern, $this->view)){
                 $this->view = preg_replace_callback($pattern, function($params){
-                    $includeFile = __DIR__ . '/layouts/' . $params[1] . '.template.php';
+                    $includeFile = LAYOUT_BASE . $params[1] . '.template.php';
+
+                    if(!file_exists($includeFile)){
+                        echo 'Dosya Bulunamadı..! <b> templateEngine.php//line:64</b> ' . $includeFile;
+                        exit();
+                    }
+
                     return file_get_contents($includeFile);
                 }, $this->view);
-            }
 
+            }
         }
 
         /**
          * Performs parse for the following directive
-         * @section('yield_name')
+         * @section('yield_name)
          * <p>Section Content</p>
          * @endsection
          */
@@ -78,6 +84,7 @@
                 $this->sections[$params[1]] = $params[2];
                 return '';
             }, $this->view);
+
         }
 
         /**
@@ -85,7 +92,7 @@
          * @yield 'yield_name'
          */
         private function parseYield(){
-            $pattern = '/@yield\s?[\'\"](.*)[\'\"]/';
+            $pattern = '/@yield [\'\"](.*)[\'\"]/';
             $this->view = preg_replace_callback($pattern, function($params){
                 return $this->sections[$params[1]];
             }, $this->view);
@@ -136,6 +143,7 @@
         private function updateCache(){
             file_put_contents($this->cachePath, $this->view);
         }
+
     }
 
 

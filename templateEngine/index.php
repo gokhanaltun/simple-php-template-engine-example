@@ -1,4 +1,5 @@
 <?php
+    require_once 'config.php';
     require_once 'templateRenderer.php';
     $renderer = new TemplateRenderer();
 
